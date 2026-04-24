@@ -6,7 +6,7 @@ load_dotenv()
 
 st.set_page_config(page_title="Arokyamary's Assistant", layout='wide', page_icon='🤖')
 st.title("Arokyamary's AI Assistant")
-st.caption('Powered by LangChain + ChromaDB + Groq Llama 3 (Free LLM)')
+st.caption('Powered by LangChain + Groq LLaMA 3 | RAG-Based AI Assistant')
 
 @st.cache_resource
 def load_chain():
@@ -20,8 +20,7 @@ def load_chain():
     import os
 
     emb = HuggingFaceEmbeddings(model_name='all-MiniLM-L6-v2', model_kwargs={'device': 'cpu'})
-    
-    # Rebuild vectorstore if not exists or empty
+
     chroma_path = './chroma_db'
     try:
         vs = Chroma(persist_directory=chroma_path, embedding_function=emb)
@@ -39,14 +38,14 @@ def load_chain():
     retriever = vs.as_retriever(search_kwargs={'k': 5})
     llm = ChatGroq(model_name='llama-3.3-70b-versatile', temperature=0,
         groq_api_key=st.secrets.get('GROQ_API_KEY', os.getenv('GROQ_API_KEY', '')))
+
     pr = PromptTemplate(
         input_variables=['context', 'question'],
         template=(
-            "You are Arokyamary's Assistant. "
-            "If the question is a greeting like hi/hello, just say: "
-            "\"Hello! I'm Arokyamary's Assistant. How can I help you today?\" — nothing else. "
-            "For business questions use this data:\n{context}\n\n"
-            "For general questions answer helpfully without mentioning the business data. "
+            "You are Arokyamary's Assistant — a helpful, friendly AI. "
+            "Answer all questions naturally and conversationally. "
+            "If business data is relevant to the question, use this data:\n{context}\n\n"
+            "Otherwise just answer naturally like a normal assistant. "
             "Question: {question}\nAnswer:"
         )
     )
@@ -86,7 +85,7 @@ if 'auto_q' in st.session_state:
     with st.chat_message('user'):
         st.write(q)
     with st.chat_message('Arokyamary', avatar='👩‍💼'):
-        with st.spinner('Searching your data...'):
+        with st.spinner('Thinking...'):
             ans = ask(q)
         st.write(ans)
     st.session_state.messages.append({'role': 'assistant', 'content': ans})
@@ -97,7 +96,7 @@ if q := st.chat_input('Ask me anything...'):
     with st.chat_message('user'):
         st.write(q)
     with st.chat_message('Arokyamary', avatar='👩‍💼'):
-        with st.spinner('Analysing...'):
+        with st.spinner('Thinking...'):
             ans = ask(q)
         st.write(ans)
     st.session_state.messages.append({'role': 'assistant', 'content': ans})
