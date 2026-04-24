@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-st.set_page_config(page_title='AI Business Analyst', layout='wide', page_icon='robot')
-st.title('AI-Powered Business Intelligence Chatbot')
+st.set_page_config(page_title="Arokyamary's Assistant", layout='wide', page_icon='🤖')
+st.title("Arokyamary's AI Assistant")
 st.caption('Powered by LangChain + ChromaDB + Groq Llama 3 (Free LLM)')
 
 @st.cache_resource
@@ -23,7 +23,14 @@ def load_chain():
         groq_api_key=st.secrets.get('GROQ_API_KEY', os.getenv('GROQ_API_KEY', '')))
     pr = PromptTemplate(
         input_variables=['context', 'question'],
-        template='Use ONLY this data:\n{context}\n\nQuestion: {question}\nAnswer:'
+        template=(
+            "You are Arokyamary's Assistant. "
+            "If the question is a greeting like hi/hello, just say: "
+            "\"Hello! I'm Arokyamary's Assistant. How can I help you today?\" — nothing else. "
+            "For business questions use this data:\n{context}\n\n"
+            "For general questions answer helpfully without mentioning the business data. "
+            "Question: {question}\nAnswer:"
+        )
     )
 
     def ask(question):
@@ -51,7 +58,8 @@ if 'messages' not in st.session_state:
     st.session_state.messages = []
 
 for m in st.session_state.messages:
-    with st.chat_message(m['role']):
+    avatar = '👩‍💼' if m['role'] == 'assistant' else None
+    with st.chat_message(m['role'] if m['role'] == 'user' else 'Arokyamary', avatar=avatar):
         st.write(m['content'])
 
 if 'auto_q' in st.session_state:
@@ -59,18 +67,18 @@ if 'auto_q' in st.session_state:
     st.session_state.messages.append({'role': 'user', 'content': q})
     with st.chat_message('user'):
         st.write(q)
-    with st.chat_message('assistant'):
+    with st.chat_message('Arokyamary', avatar='👩‍💼'):
         with st.spinner('Searching your data...'):
             ans = ask(q)
         st.write(ans)
     st.session_state.messages.append({'role': 'assistant', 'content': ans})
     st.rerun()
 
-if q := st.chat_input('Ask about your business data...'):
+if q := st.chat_input('Ask me anything...'):
     st.session_state.messages.append({'role': 'user', 'content': q})
     with st.chat_message('user'):
         st.write(q)
-    with st.chat_message('assistant'):
+    with st.chat_message('Arokyamary', avatar='👩‍💼'):
         with st.spinner('Analysing...'):
             ans = ask(q)
         st.write(ans)
