@@ -13,11 +13,29 @@ def load_chain():
     from langchain_groq import ChatGroq
     from langchain_community.vectorstores import Chroma
     from langchain_community.embeddings import HuggingFaceEmbeddings
+    from langchain_community.document_loaders import CSVLoader
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
     from langchain_core.prompts import PromptTemplate
     from langchain_core.output_parsers import StrOutputParser
+    import os
 
     emb = HuggingFaceEmbeddings(model_name='all-MiniLM-L6-v2', model_kwargs={'device': 'cpu'})
-    vs = Chroma(persist_directory='./chroma_db', embedding_function=emb)
+    
+    # Rebuild vectorstore if not exists or empty
+    chroma_path = './chroma_db'
+    try:
+        vs = Chroma(persist_directory=chroma_path, embedding_function=emb)
+        if vs._collection.count() == 0:
+            raise Exception("Empty collection")
+    except:
+        all_docs = []
+        for csv_file in ['data/sales_report.csv', 'data/product_data.csv']:
+            loader = CSVLoader(file_path=csv_file, encoding='utf-8')
+            all_docs.extend(loader.load())
+        splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=80)
+        chunks = splitter.split_documents(all_docs)
+        vs = Chroma.from_documents(documents=chunks, embedding=emb, persist_directory=chroma_path)
+
     retriever = vs.as_retriever(search_kwargs={'k': 5})
     llm = ChatGroq(model_name='llama-3.3-70b-versatile', temperature=0,
         groq_api_key=st.secrets.get('GROQ_API_KEY', os.getenv('GROQ_API_KEY', '')))
