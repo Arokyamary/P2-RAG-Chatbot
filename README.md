@@ -18,17 +18,19 @@ A RAG-based AI chatbot that answers business questions from CSV data using LangC
 - Sample questions in sidebar for quick testing
 - Deployed live on Streamlit Cloud
 
-## 📁 Project Structure
+## Project Structure
 
+```
 P2_RAG_Chatbot/
-├── app.py                  # Streamlit chat UI
-├── rag_engine.py           # RAG pipeline
-├── build_vectorstore.py    # Build ChromaDB vectors
+├── app.py                    # Streamlit chat UI
+├── rag_engine.py             # RAG pipeline
+├── build_vectorstore.py      # Build ChromaDB vectors
 ├── data/
 │   ├── sales_report.csv
 │   └── product_data.csv
 ├── requirements.txt
 └── .gitignore
+```
 
 ## 🚀 Run Locally
 ```bash
