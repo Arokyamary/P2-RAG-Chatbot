@@ -3,7 +3,7 @@
 A RAG-based AI chatbot that answers business questions from CSV data using LangChain, ChromaDB, and Groq LLaMA 3.
 
 ## 🔗 Live Demo
-[Click here to use the chatbot](https://p2-rag-chatbot-a8pgr8g4w3ezpj6tkmfhcn.streamlit.app)
+https://p2-rag-chatbot-a8pgr8g4w3ezpj6tkmfhcn.streamlit.app
 
 ## 🛠️ Tech Stack
 - **LangChain** — RAG pipeline
